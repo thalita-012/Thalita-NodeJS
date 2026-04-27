@@ -1,0 +1,30 @@
+{
+  "dependencies": {
+    "express": "^5.2.1",
+    "mysql2": "^3.22.3"
+  },
+  "name": "thalita-nodejs",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "devDependencies": {
+    "nodemon": "^3.1.14"
+  },
+  "scripts": {
+    "dev": "npx nodemon server.js",
+    "start": "node server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/thalita-012/Thalita-NodeJS.git"
+  },
+  "bugs": {
+    "url": "https://github.com/thalita-012/Thalita-NodeJS/issues"
+  },
+  "homepage": "https://github.com/thalita-012/Thalita-NodeJS#readme"
+}
