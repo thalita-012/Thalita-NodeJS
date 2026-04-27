@@ -4,7 +4,9 @@ const app = express()
 app.use(express.json());
 //Get User
 app.get('/users', (req, res) => {
-  db.query('SELECT * FROM users', (err, results) => {
+  db.query(
+    'SELECT * FROM users', 
+    (err, results) => {
     if (err) return res.status(500).json(err);
     res.json(results);
   });
@@ -50,7 +52,9 @@ app.put('/users/:id', (req, res) => {
 //Delete user  
 app.delete('/users/:id', (req, res) => {
   const { id } = req.params;
-  db.query('DELETE FROM users WHERE id = ?', [id], (err, result) => {  
+  db.query('DELETE FROM users WHERE id = ?',
+    [id], 
+    (err, result) => {  
     if (err) return res.status(500).json(err);
       if (result.length === 0) {
         return res.status(404).send('User not found');
