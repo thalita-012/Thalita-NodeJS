@@ -2,7 +2,6 @@ import express from 'express'
 import db from './database.js';
 const app = express()
 app.use(express.json());
-let users = []
 //Get User
 app.get('/users', (req, res) => {
   db.query('SELECT * FROM users', (err, results) => {
