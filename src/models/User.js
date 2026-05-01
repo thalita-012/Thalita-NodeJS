@@ -1,10 +1,10 @@
 import db from '../config/db.js';
+import BaseModel from './BaseModel.js';
 
-class User {
+class User extends BaseModel {
   constructor(id, name, age) {
+    super(name, age);
     this.id = id;
-    this.name = name;
-    this.age = age;
   }
 
   static async findAll() {
