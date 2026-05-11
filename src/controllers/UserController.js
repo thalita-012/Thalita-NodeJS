@@ -1,95 +1,66 @@
-import User from '../models/User.js';
 import BaseController from './BaseController.js';
+import UserService from '../service/UserService.js';
+
+const ERROR_STATUS = {
+  NOT_FOUND:          { status: 404, message: 'User not found' },
+  MISSING_FIELDS:     { status: 400, message: 'Name and age are required' },
+  INVALID_AGE:        { status: 400, message: 'Age must be between 0 and 150' },
+  NO_FIELDS_PROVIDED: { status: 400, message: 'At least one field required' },
+  DELETE_FAILED:      { status: 500, message: 'Failed to delete user' },
+};
 
 export default class UserController extends BaseController {
+  constructor() {
+    super();
+    this.userService = new UserService();
+  }
+
+  #handleError(res, error) {
+    const known = ERROR_STATUS[error.message];
+    return known
+      ? this.error(res, known.message, known.status)
+      : this.error(res, error.message, 500);
+  }
 
   async getUsers(req, res) {
     try {
-      const users = await User.findAll();
+      const users = await this.userService.getAllUsers();
       this.success(res, users, 'Users fetched successfully');
-    } catch (error) {
-      this.error(res, error.message, 500);
-    }
+    } catch (e) { this.#handleError(res, e); }
   }
 
   async getUserById(req, res) {
     try {
-      const { id } = req.params;
-      const user = await User.findById(id);
-
-      if (!user) {
-        return this.error(res, 'User not found', 404);
-      }
-
+      const user = await this.userService.getUserById(req.params.id);
       this.success(res, user, 'User fetched successfully');
-    } catch (error) {
-      this.error(res, error.message, 500);
-    }
+    } catch (e) { this.#handleError(res, e); }
   }
 
   async createUser(req, res) {
     try {
-      const { name, age } = req.body;
-
-      if (!name || age === undefined) {
-        return this.error(res, 'Name and age are required', 400);
-      }
-
-      if (age < 0 || age > 150) {
-        return this.error(res, 'Age must be between 0 and 150', 400);
-      }
-
-      const user = await User.create({ name, age });
-      this.success(res, user, 'User created successfully');
-    } catch (error) {
-      this.error(res, error.message, 500);
-    }
+      const user = await this.userService.createUser(req.body);
+      this.success(res, user, 'User created successfully', 201);
+    } catch (e) { this.#handleError(res, e); }
   }
 
   async updateUser(req, res) {
     try {
-      const { id } = req.params;
-      const { name, age } = req.body;
-
-      if (name === undefined && age === undefined) {
-        return this.error(res, 'At least one field (name or age) is required for update', 400);
-      }
-
-      const existingUser = await User.findById(id);
-      if (!existingUser) {
-        return this.error(res, 'User not found', 404);
-      }
-
-      const updateData = {
-        name: name !== undefined ? name : existingUser.name,
-        age: age !== undefined ? age : existingUser.age
-      };
-
-      const updatedUser = await User.update(id, updateData);
-      this.success(res, updatedUser, 'User updated successfully');
-    } catch (error) {
-      this.error(res, error.message, 500);
-    }
+      const user = await this.userService.updateUser(req.params.id, req.body);
+      this.success(res, user, 'User updated successfully');
+    } catch (e) { this.#handleError(res, e); }
   }
 
   async deleteUser(req, res) {
     try {
-      const { id } = req.params;
+      await this.userService.deleteUser(req.params.id);
+      this.success(res, null, 'User deleted successfully');
+    } catch (e) { this.#handleError(res, e); }
+  }
 
-      const existingUser = await User.findById(id);
-      if (!existingUser) {
-        return this.error(res, 'User not found', 404);
-      }
-
-      const deleted = await User.delete(id);
-
-      if (deleted) {
-        this.success(res, null, 'User deleted successfully');
-      } else {
-        this.error(res, 'User not found', 404);
-      }
-    } catch (error) {
-      this.error(res, error.message, 500);
-    }
+  async searchUsers(req, res) {
+    try {
+      const users = await this.userService.searchByName(req.query.name);
+      this.success(res, users, 'Search results');
+    } catch (e) { this.#handleError(res, e); }
   }
 }

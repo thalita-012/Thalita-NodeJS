@@ -1,12 +1,13 @@
+// src/server.js
 import express from 'express';
-import userRouter from './routes/userRoute.js';  // Note: no ../ since we're in src folder
+import userRoute from './routes/userRoute.js'; // ✅ not './src/routes/...'
 
-const app = express();
-const PORT = 3000;
+const app  = express();
+const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
-app.use('/api', userRouter);
+app.use('/api', userRoute);
 
 app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
+  console.log(`Server running on port ${PORT}`);
 });
